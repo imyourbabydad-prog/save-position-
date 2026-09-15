@@ -1,0 +1,33 @@
+local Lighting = game:GetService("Lighting")
+local Terrain = workspace.Terrain
+
+-- Lower visual quality
+Lighting.GlobalShadows = false
+Lighting.FogEnd = 100000
+Lighting.Brightness = 1
+
+-- Disable common effects
+for _, v in pairs(Lighting:GetChildren()) do
+	if v:IsA("BloomEffect")
+		or v:IsA("BlurEffect")
+		or v:IsA("ColorCorrectionEffect")
+		or v:IsA("SunRaysEffect")
+		or v:IsA("DepthOfFieldEffect") then
+		v.Enabled = false
+	end
+end
+
+-- Simplify materials
+Terrain.WaterWaveSize = 0
+Terrain.WaterWaveSpeed = 0
+Terrain.WaterReflectance = 0
+Terrain.WaterTransparency = 0
+
+-- Reduce part detail
+for _, obj in pairs(workspace:GetDescendants()) do
+	if obj:IsA("BasePart") then
+		obj.CastShadow = false
+	end
+end
+
+print("FPS Booster Enabled")
