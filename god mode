@@ -1,0 +1,98 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "GodModeGui"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Frame
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 220, 0, 100)
+Frame.Position = UDim2.new(0.4, 0, 0.4, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Frame.Parent = ScreenGui
+Frame.Active = true
+Frame.Draggable = true
+
+-- UICorner
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 12)
+Corner.Parent = Frame
+
+-- UIStroke
+local Stroke = Instance.new("UIStroke")
+Stroke.Color = Color3.fromRGB(255, 255, 255)
+Stroke.Thickness = 2
+Stroke.Parent = Frame
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -35, 0, 30)
+Title.BackgroundTransparency = 1
+Title.Text = "God Mode"
+Title.TextColor3 = Color3.new(1,1,1)
+Title.TextScaled = true
+Title.Parent = Frame
+
+-- X Button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -32, 0, 2)
+CloseButton.Text = "X"
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseButton.TextColor3 = Color3.new(1,1,1)
+CloseButton.Parent = Frame
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.Parent = CloseButton
+
+-- God Mode Button
+local GodButton = Instance.new("TextButton")
+GodButton.Size = UDim2.new(0.8, 0, 0, 40)
+GodButton.Position = UDim2.new(0.1, 0, 0.5, 0)
+GodButton.Text = "Activate God Mode"
+GodButton.BackgroundColor3 = Color3.fromRGB(50, 170, 50)
+GodButton.TextColor3 = Color3.new(1,1,1)
+GodButton.Parent = Frame
+
+local GodCorner = Instance.new("UICorner")
+GodCorner.Parent = GodButton
+
+-- Close GUI
+CloseButton.MouseButton1Click:Connect(function()
+	ScreenGui.Enabled = false
+end)
+
+-- God Mode
+local function EnableGodMode()
+	local character = player.Character or player.CharacterAdded:Wait()
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+	if humanoid then
+		humanoid.MaxHealth = math.huge
+		humanoid.Health = math.huge
+
+		humanoid.HealthChanged:Connect(function()
+			if humanoid.Health < humanoid.MaxHealth then
+				humanoid.Health = humanoid.MaxHealth
+			end
+		end)
+	end
+end
+
+GodButton.MouseButton1Click:Connect(function()
+	EnableGodMode()
+	GodButton.Text = "God Mode ON"
+end)
+
+-- Re-enable after respawn
+player.CharacterAdded:Connect(function(char)
+	task.wait(1)
+	local humanoid = char:FindFirstChildOfClass("Humanoid")
+	if humanoid and GodButton.Text == "God Mode ON" then
+		humanoid.MaxHealth = math.huge
+		humanoid.Health = math.huge
+	end
+end)
