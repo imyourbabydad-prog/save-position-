@@ -1,0 +1,134 @@
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+
+local savedPosition = nil
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player.PlayerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,250,0,120)
+frame.Position = UDim2.new(0.5,-125,0.5,-60)
+frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
+frame.Parent = gui
+
+local frameCorner = Instance.new("UICorner")
+frameCorner.Parent = frame
+
+local frameStroke = Instance.new("UIStroke")
+frameStroke.Thickness = 2
+frameStroke.Color = Color3.fromRGB(255,255,255)
+frameStroke.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(0.8,0,0,30)
+title.Position = UDim2.new(0,5,0,5)
+title.Text = "Made By imjustabaconYT"
+title.TextColor3 = Color3.new(1,1,1)
+title.BackgroundColor3 = Color3.fromRGB(50,50,50)
+title.Parent = frame
+
+Instance.new("UICorner", title)
+Instance.new("UIStroke", title)
+
+local xButton = Instance.new("TextButton")
+xButton.Size = UDim2.new(0,30,0,30)
+xButton.Position = UDim2.new(1,-35,0,5)
+xButton.Text = "X"
+xButton.BackgroundColor3 = Color3.fromRGB(255,0,0)
+xButton.TextColor3 = Color3.new(1,1,1)
+xButton.Parent = frame
+
+Instance.new("UICorner", xButton)
+Instance.new("UIStroke", xButton)
+
+local saveBtn = Instance.new("TextButton")
+saveBtn.Size = UDim2.new(0,110,0,40)
+saveBtn.Position = UDim2.new(0,10,0,60)
+saveBtn.Text = "Save Position"
+saveBtn.BackgroundColor3 = Color3.fromRGB(0,170,0)
+saveBtn.TextColor3 = Color3.new(1,1,1)
+saveBtn.Parent = frame
+
+Instance.new("UICorner", saveBtn)
+Instance.new("UIStroke", saveBtn)
+
+local tpBtn = Instance.new("TextButton")
+tpBtn.Size = UDim2.new(0,110,0,40)
+tpBtn.Position = UDim2.new(0,130,0,60)
+tpBtn.Text = "Teleport"
+tpBtn.BackgroundColor3 = Color3.fromRGB(0,85,255)
+tpBtn.TextColor3 = Color3.new(1,1,1)
+tpBtn.Parent = frame
+
+Instance.new("UICorner", tpBtn)
+Instance.new("UIStroke", tpBtn)
+
+-- Save Position
+saveBtn.MouseButton1Click:Connect(function()
+	local char = player.Character
+	if char and char:FindFirstChild("HumanoidRootPart") then
+		savedPosition = char.HumanoidRootPart.CFrame
+	end
+end)
+
+-- Teleport
+tpBtn.MouseButton1Click:Connect(function()
+	local char = player.Character
+	if char and char:FindFirstChild("HumanoidRootPart") and savedPosition then
+		char.HumanoidRootPart.CFrame = savedPosition
+	end
+end)
+
+-- Hide GUI
+xButton.MouseButton1Click:Connect(function()
+	frame.Visible = false
+end)
+
+-- Drag GUI
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	frame.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
+end
+
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+frame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
+
